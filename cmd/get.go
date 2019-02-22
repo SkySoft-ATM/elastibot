@@ -15,10 +15,17 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
+
+const availableRes = `
+	* index
+	* template
+`
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
@@ -26,27 +33,31 @@ var getCmd = &cobra.Command{
 	Short: "Display one or many resources",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		names, err := esClient.IndexNames()
-		if err != nil {
-			// Handle error
-			panic(err)
+		defer esClient.Stop()
+		if len(args) < 1 {
+			fmt.Printf("✘ You must specify the type of resource to get. Valid resource types include: %s\n", availableRes)
+
+			os.Exit(1)
 		}
-		for _, name := range names {
-			fmt.Printf("%s\n", name)
+		resource := args[0]
+		if resource == "index" {
+			names, err := esClient.IndexNames()
+			if err != nil {
+				// Handle error
+				panic(err)
+			}
+			for _, name := range names {
+				fmt.Printf("%s\n", name)
+			}
+			return
+		}
+
+		if resource == "template" {
+			esClient.IndexGetTemplate("_all").Do(context.Background())
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

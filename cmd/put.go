@@ -15,30 +15,77 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
+
+var filename string
+
+func init() {
+	rootCmd.AddCommand(putCmd)
+	putCmd.Flags().StringVarP(&filename, "filename", "f", "", "file path")
+	putCmd.MarkFlagRequired("filename")
+}
 
 // putCmd represents the put command
 var putCmd = &cobra.Command{
 	Use:   "put",
 	Short: "Store a configuration to a resource by filename (i.e. templates, mapping etc...)",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("put called")
+		defer esClient.Stop()
+		filename := cmd.Flag("filename").Value.String()
+		if len(args) < 1 {
+			fmt.Printf("you need to give a name for your template")
+			os.Exit(1)
+		}
+		UploadElasticSearchTemplate()
+
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(putCmd)
+func UploadElasticSearchTemplate(templateName string, templateFile string) error {
 
-	// Here you will define your flags and configuration settings.
+	fileContent, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		fmt.Printf("Failed to Read the File %v\n", templateFile)
+		return err
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// putCmd.PersistentFlags().String("foo", "", "A help for foo")
+	client := &http.Client{}
+	client.Timeout = time.Second * 15
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// putCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	uri := url + "/_template/" + templateName
+	body := bytes.NewBuffer(fileContent)
+	req, err := http.NewRequest(http.MethodPut, uri, body)
+	if err != nil {
+		fmt.Printf("http.NewRequest() failed with %v\n", err)
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("client.Do() failed with %v\n", err)
+		return err
+	}
+
+	defer resp.Body.Close()
+	var response []byte
+	response, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("ioutil.ReadAll() failed with %v\n", err)
+		return err
+	}
+
+	fmt.Printf("Response status code: %v, text:%v\n", resp.StatusCode, string(response))
+	if resp.StatusCode == 200 {
+		fmt.Printf("Template has been uploaded to ES: %v\n", string(fileContent))
+	} else {
+		fmt.Printf("Template has NOT been uploaded to ES\n")
+	}
 }

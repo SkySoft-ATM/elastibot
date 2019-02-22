@@ -29,7 +29,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		esVersion, err := esClient.ElasticsearchVersion(url)
 		if err != nil {
-			fmt.Printf("No elasticsearch found in [ %s ]\n", url)
+			fmt.Printf("✘ no elasticsearch found in [ %s ]\n", url)
 			os.Exit(1)
 		}
 		fmt.Printf("%s\n", esVersion)

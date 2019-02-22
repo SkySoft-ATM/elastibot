@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -96,10 +95,9 @@ func elasticConnect(cmd *cobra.Command, args []string) {
 		elastic.SetSniff(false),
 		elastic.SetHealthcheckInterval(10*time.Second),
 		elastic.SetRetrier(NewCustomRetrier()),
-		elastic.SetGzip(true),
-		elastic.SetErrorLog(log.New(os.Stderr, "ELASTIC ", log.LstdFlags)),
-		elastic.SetInfoLog(log.New(os.Stdout, "", log.LstdFlags)))
-
+		elastic.SetGzip(true))
+	//elastic.SetErrorLog(log.New(os.Stderr, "ELASTIC ", log.LstdFlags)),
+	//elastic.SetInfoLog(log.New(os.Stdout, "", log.LstdFlags)))
 	if err != nil {
 		fmt.Printf("✘ Failed to connect to Elasticsearch, configuration is not correct\nCheck url [ %s ]\n", url)
 		os.Exit(1)

@@ -26,7 +26,7 @@ func NewCustomRetrier() *MyRetrier {
 func (r *MyRetrier) Retry(ctx context.Context, retry int, req *http.Request, resp *http.Response, err error) (time.Duration, bool, error) {
 	// Fail hard on a specific error
 	if err == syscall.ECONNREFUSED {
-		return 0, false, errors.New("Elasticsearch or network down")
+		return 0, false, errors.New("✘ Elasticsearch or network down")
 	}
 
 	// Stop after 5 retries
