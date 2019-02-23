@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 SkySoft-ATM <chambodn@skysoft-atm.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ var delCmd = &cobra.Command{
 		if err != nil {
 			fmt.Printf("✘ Error trying to delete index %s\n", index)
 			fmt.Printf("%s\n", err)
+			os.Exit(1)
 		}
 	},
 }

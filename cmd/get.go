@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 SkySoft-ATM <chambodn@skysoft-atm.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,22 +73,6 @@ var getCmd = &cobra.Command{
 			fmt.Printf("%s\n", esVersion)
 		}
 
-		// resource := args[0]
-		// if resource == "index" {
-		// 	names, err := esClient.IndexNames()
-		// 	if err != nil {
-		// 		// Handle error
-		// 		panic(err)
-		// 	}
-		// 	for _, name := range names {
-		// 		fmt.Printf("%s\n", name)
-		// 	}
-		// 	return
-		// }
-
-		// if resource == "template" {
-		// 	esClient.IndexGetTemplate("_all").Do(context.Background())
-		// }
 	},
 }
 
