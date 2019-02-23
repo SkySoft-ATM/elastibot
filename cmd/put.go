@@ -15,13 +15,10 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -70,46 +67,4 @@ func getFileContent(filepath string) ([]byte, error) {
 		return nil, err
 	}
 	return fileContent, nil
-}
-
-func uploadElasticSearchTemplate(templateName string, templateFile string) error {
-
-	fileContent, err := ioutil.ReadFile(templateFile)
-	if err != nil {
-		fmt.Printf("Failed to Read the File %v\n", templateFile)
-		return err
-	}
-
-	client := &http.Client{}
-	client.Timeout = time.Second * 15
-
-	uri := url + "/_template/" + templateName
-	body := bytes.NewBuffer(fileContent)
-	req, err := http.NewRequest(http.MethodPut, uri, body)
-	if err != nil {
-		fmt.Printf("http.NewRequest() failed with %v\n", err)
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Printf("client.Do() failed with %v\n", err)
-		return err
-	}
-
-	defer resp.Body.Close()
-	var response []byte
-	response, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("ioutil.ReadAll() failed with %v\n", err)
-		return err
-	}
-
-	fmt.Printf("Response status code: %v, text:%v\n", resp.StatusCode, string(response))
-	if resp.StatusCode == 200 {
-		fmt.Printf("Template has been uploaded to ES: %v\n", string(fileContent))
-	} else {
-		fmt.Printf("Template has NOT been uploaded to ES\n")
-	}
-	return nil
 }
