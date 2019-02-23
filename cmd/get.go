@@ -71,7 +71,6 @@ var getCmd = &cobra.Command{
 			}
 			for _, template := range templates {
 				fmt.Printf("%v\n", template.IndexPatterns)
-				fmt.Printf("%v\n", template)
 			}
 			os.Exit(0)
 		case "version", "v":
