@@ -63,7 +63,16 @@ var getCmd = &cobra.Command{
 			}
 			os.Exit(0)
 		case "template", "tpl":
-			esClient.IndexGetTemplate("_all").Do(context.Background())
+			templates, err := esClient.IndexGetTemplate("_all").Do(context.Background())
+			if err != nil {
+				fmt.Printf("✘ error trying to retrieve templates on %s\n", url)
+				fmt.Printf("✘ %s\n", err)
+				os.Exit(1)
+			}
+			for _, template := range templates {
+				fmt.Printf("%v\n", template.IndexPatterns)
+			}
+			os.Exit(0)
 		case "version", "v":
 			esVersion, err := esClient.ElasticsearchVersion(url)
 			if err != nil {
