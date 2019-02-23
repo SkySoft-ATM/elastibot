@@ -23,8 +23,10 @@ import (
 )
 
 const availableRes = `
-	* index
-	* template
+	* color (aka 'c')
+	* index (aka 'i')
+	* template (aka 'tpl')
+	* version (aka 'v')
 `
 
 // getCmd represents the get command
@@ -36,25 +38,57 @@ var getCmd = &cobra.Command{
 		defer esClient.Stop()
 		if len(args) < 1 {
 			fmt.Printf("✘ You must specify the type of resource to get. Valid resource types include: %s\n", availableRes)
-
 			os.Exit(1)
 		}
-		resource := args[0]
-		if resource == "index" {
+
+		switch args[0] {
+		case "color", "c":
+			res, err := esClient.ClusterHealth().Do(context.Background())
+			if err != nil {
+				fmt.Printf("✘ error trying to retrieve indexes on %s\n", url)
+				fmt.Printf("✘ %s\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("%s\n", res.Status)
+			os.Exit(0)
+		case "index", "i":
 			names, err := esClient.IndexNames()
 			if err != nil {
-				// Handle error
-				panic(err)
+				fmt.Printf("✘ error trying to retrieve indexes on %s\n", url)
+				fmt.Printf("✘ %s\n", err)
+				os.Exit(1)
 			}
 			for _, name := range names {
 				fmt.Printf("%s\n", name)
 			}
-			return
+			os.Exit(0)
+		case "template", "tpl":
+			esClient.IndexGetTemplate("_all").Do(context.Background())
+		case "version", "v":
+			esVersion, err := esClient.ElasticsearchVersion(url)
+			if err != nil {
+				fmt.Printf("✘ no elasticsearch found in [ %s ]\n", url)
+				os.Exit(1)
+			}
+			fmt.Printf("%s\n", esVersion)
 		}
 
-		if resource == "template" {
-			esClient.IndexGetTemplate("_all").Do(context.Background())
-		}
+		// resource := args[0]
+		// if resource == "index" {
+		// 	names, err := esClient.IndexNames()
+		// 	if err != nil {
+		// 		// Handle error
+		// 		panic(err)
+		// 	}
+		// 	for _, name := range names {
+		// 		fmt.Printf("%s\n", name)
+		// 	}
+		// 	return
+		// }
+
+		// if resource == "template" {
+		// 	esClient.IndexGetTemplate("_all").Do(context.Background())
+		// }
 	},
 }
 

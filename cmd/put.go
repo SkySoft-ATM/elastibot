@@ -44,12 +44,12 @@ var putCmd = &cobra.Command{
 			fmt.Printf("you need to give a name for your template")
 			os.Exit(1)
 		}
-		UploadElasticSearchTemplate()
+		uploadElasticSearchTemplate(filename, "")
 
 	},
 }
 
-func UploadElasticSearchTemplate(templateName string, templateFile string) error {
+func uploadElasticSearchTemplate(templateName string, templateFile string) error {
 
 	fileContent, err := ioutil.ReadFile(templateFile)
 	if err != nil {
@@ -88,4 +88,5 @@ func UploadElasticSearchTemplate(templateName string, templateFile string) error
 	} else {
 		fmt.Printf("Template has NOT been uploaded to ES\n")
 	}
+	return nil
 }

@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/skysoft-atm/elasticbot/cmd"
+import "github.com/skysoft-atm/elastibot/cmd"
 
 func main() {
 	cmd.Execute()
