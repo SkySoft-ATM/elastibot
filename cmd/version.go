@@ -16,23 +16,19 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
+const version = "v1.0.0"
+
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print current Elasticsearch version",
+	Short: "Print current version",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		esVersion, err := esClient.ElasticsearchVersion(url)
-		if err != nil {
-			fmt.Printf("✘ no elasticsearch found in [ %s ]\n", url)
-			os.Exit(1)
-		}
-		fmt.Printf("%s\n", esVersion)
+		fmt.Printf("**** elastibot %s ****\n", version)
 	},
 }
 
